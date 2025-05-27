@@ -1,0 +1,25 @@
+<!-- dossier/_dossier_card.html -->
+<div class="legal-card">
+    <div class="card-header bg-{{ dossier.get_priority_class }}">
+        <h3>{{ dossier.reference }}</h3>
+        <span class="badge bg-dark">{{ dossier.get_type_display }}</span>
+    </div>
+    <div class="card-body">
+        <div class="client-info">
+            <i class="fas fa-user-tie"></i>
+            {{ dossier.client.nom }}
+        </div>
+        <div class="dates">
+            <div>
+                <i class="fas fa-calendar-plus"></i>
+                Ouvert le {{ dossier.date_ouverture|date:"d/m/Y" }}
+            </div>
+            {% if dossier.date_limite %}
+            <div class="{% if dossier.is_urgent %}text-danger{% endif %}">
+                <i class="fas fa-clock"></i>
+                Échéance: {{ dossier.date_limite|date:"d/m/Y" }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<!-- facturation/invoice_pdf.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .legal-watermark {
+            opacity: 0.1;
+            position: fixed;
+            bottom: 50%;
+            right: 50%;
+            transform: translate(50%, 50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="legal-watermark">CONFIDENTIEL - Cabinet XYZ</div>
+    
+    <header class="invoice-header">
+        <h1>FACTURE #{{ facture.numero }}</h1>
+        <p class="small">Article 289 du CGI - TVA non applicable</p>
+    </header>
+    
+    <div class="invoice-details">
+        <!-- Contenu facture -->
+    </div>
+</body>
+</html>

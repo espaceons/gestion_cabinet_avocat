@@ -1,0 +1,19 @@
+<!-- dossier/_timeline.html -->
+<div class="legal-timeline">
+    {% for event in affaire.get_critical_dates %}
+    <div class="timeline-item {% if event.is_past_due %}danger{% endif %}">
+        <div class="timeline-date">{{ event.date|date:"d/m/Y" }}</div>
+        <div class="timeline-content">
+            <span class="badge bg-{{ event.get_urgency_class }}">
+                {{ event.get_type_display }}
+            </span>
+            <p>{{ event.description }}</p>
+            {% if event.is_past_due %}
+            <span class="text-danger">
+                <i class="fas fa-exclamation-triangle"></i> Délai dépassé
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>

@@ -9,9 +9,9 @@ from GCA.views import home_view
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-     path('', home_view, name='home'),
+    path('', home_view, name='home'),
     # Authentification
-    path('compte/', include('utilisateurs.urls')),
+    path('utilisateurs/', include('utilisateurs.urls')),
     
     # Applications métier
     #path('clients/', include('clients.urls')),

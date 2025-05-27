@@ -3,8 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Accueil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bienvenue sur ma page d'accueil !</h1>
+    <div class="container">
+        <h1>Bienvenue sur ma page d'accueil !</h1>
+        <p>
+            <a href="{% url 'utilisateurs:connexion' %}">Se connecter</a>
+        </p>
+        <p>
+            <a href="{% url 'utilisateurs:inscription' %}">Créer un compte</a>
+        </p>
+    </div>
 </body>
 </html>

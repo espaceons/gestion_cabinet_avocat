@@ -1,11 +1,18 @@
 from django.db import models
-
 from clients.models import Client
 
-# Create your models here.
 class Affaire(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    reference = models.CharField(max_length=50)
-    date_ouverture = models.DateField()
-    statut = models.CharField(choices=[("EN_COURS", "En cours"), ("CLOTURE", "Clôturé"), ("ANNULE", "Annulé")])
-    description = models.TextField()
+    STATUT_CHOICES = [
+        ("EN_COURS", "En cours"),
+        ("CLOTURE", "Clôturé"),
+        ("ANNULE", "Annulé"),
+    ]
+
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Client associé")
+    reference = models.CharField(max_length=50, unique=True, verbose_name="Référence de l'affaire") # Ajout de unique=True
+    date_ouverture = models.DateField(verbose_name="Date d'ouverture")
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, verbose_name="Statut de l'affaire")
+    description = models.TextField(verbose_name="Description détaillée")
+
+    def __str__(self):
+        return f"{self.reference} - {self.client.nom}"

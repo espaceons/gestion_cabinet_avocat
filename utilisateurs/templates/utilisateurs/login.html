@@ -1,0 +1,161 @@
+{% extends "base.html" %} {# Indique que ce template hérite de base.html #}
+
+{% block title %}{{ titre_page|default:"Connexion" }} - Cabinet Avocats{% endblock %} {# Remplace le titre du block 'title' #}
+
+{% block extra_head %}
+    {# Styles spécifiques à la page de connexion, si besoin. Sinon, vous pouvez supprimer ce block. #}
+    <style>
+        body {
+            /* Ces styles peuvent être écrasés ou complétés par base.html */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5; /* S'assure que le fond reste le même */
+            margin: 0; /* Important pour le centrage */
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-sizing: border-box;
+            /* Pas de margin: 20px auto; ici car le body gère le centrage global */
+        }
+        /* Cache le container de base.html qui n'est pas nécessaire ici */
+        main.container {
+            max-width: initial; /* Réinitialise la largeur max du main container */
+            margin: 0; /* Annule le centrage du main container */
+            padding: 0; /* Annule le padding du main container */
+            background-color: initial; /* Annule le fond blanc */
+            box-shadow: none; /* Annule l'ombre */
+            display: flex; /* Pour centrer le login-container */
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1; /* Permet à main de prendre de la place */
+            height: 100vh; /* S'assure qu'il prend toute la hauteur */
+        }
+        /* Styles du formulaire */
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95em;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .errorlist {
+            color: #dc3545;
+            list-style-type: none;
+            padding: 0;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            text-align: left;
+        }
+        .forgot-password {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        .forgot-password a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .forgot-password a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %} {# Le contenu principal de cette page sera inséré ici #}
+    {# Remplacez le conteneur central de base.html par votre conteneur de connexion #}
+    <div class="login-container">
+        <h1>Connexion</h1>
+
+        {# Les messages de Django sont déjà gérés dans base.html, donc pas besoin de les répéter ici #}
+        {# {% if messages %} ... {% endif %} #}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+                <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <button type="submit">Se connecter</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+        <p class="forgot-password">
+            <a href="#">Mot de passe oublié ?</a>
+        </p>
+    </div>
+{% endblock %}

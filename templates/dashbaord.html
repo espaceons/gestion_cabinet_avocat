@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de Bord</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="mt-5">Tableau de Bord</h1>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Clients</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ total_clients }}</h5>
+                        <p class="card-text">Total des clients inscrits</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Affaires</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ total_affaires }}</h5>
+                        <p class="card-text">Total des affaires en cours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2>Actions Rapides</h2>
+                <a href="{% url 'clients:liste' %}" class="btn btn-info me-2">Gestion des Clients</a>
+                <a href="{% url 'affaires:liste' %}" class="btn btn-info">Gestion des Affaires</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,56 +1,37 @@
-from django.shortcuts import render
+# affaire/views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Affaire
+from django.contrib.auth.decorators import login_required # Pour restreindre l'accès aux utilisateurs connectés
 
-# Create your views here.
-from django.views.generic import ListView, CreateView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
-from django.utils import timezone
-from .models import Affaire, Dossier
-from .forms import AffaireForm, DossierForm
+@login_required
+def liste_affaires(request):
+    """
+    Affiche la liste de toutes les affaires.
+    """
+    affaires = Affaire.objects.all().select_related('client') # Optimise la requête pour récupérer aussi le client
+    context = {
+        'affaires': affaires,
+        'titre_page': "Liste des Affaires",
+    }
+    return render(request, 'affaire/liste_affaires.html', context)
 
-class AffaireListView(LoginRequiredMixin, ListView):
-    model = Affaire
-    template_name = 'affaires/liste.html'
-    paginate_by = 15
-    
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        
-        # Filtres avancés
-        statut = self.request.GET.get('statut')
-        if statut:
-            queryset = queryset.filter(statut=statut)
-            
-        # Recherche
-        if search := self.request.GET.get('search'):
-            queryset = queryset.filter(
-                Q(reference__icontains=search) |
-                Q(client__nom__icontains=search) |
-                Q(description__icontains=search)
-            )
-            
-        # Tri par urgence
-        return queryset.order_by('-date_limite', 'statut')
+@login_required
+def detail_affaire(request, pk):
+    """
+    Affiche les détails d'une affaire spécifique, ainsi que ses documents, rendez-vous et factures.
+    """
+    affaire = get_object_or_404(Affaire.objects.select_related('client'), pk=pk)
 
-class AffaireCreateView(LoginRequiredMixin, CreateView):
-    model = Affaire
-    form_class = AffaireForm
-    template_name = 'affaires/form.html'
-    
-    def get_success_url(self):
-        return reverse('affaires:detail', kwargs={'pk': self.object.pk})
-    
-    def form_valid(self, form):
-        form.instance.avocat = self.request.user
-        return super().form_valid(form)
+    # Récupérer les objets liés via les related_names (automatiquement générés par Django)
+    documents = affaire.document_set.all().order_by('-date_upload')
+    rendezvous = affaire.rendezvous_set.all().order_by('date_debut')
+    factures = affaire.facture_set.all().order_by('-date_emission')
 
-class AffaireDetailView(LoginRequiredMixin, DetailView):
-    model = Affaire
-    template_name = 'affaires/detail.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['documents'] = self.object.document_set.all()
-        context['dossiers'] = self.object.dossier_set.all()
-        context['now'] = timezone.now()
-        return
+    context = {
+        'affaire': affaire,
+        'documents': documents,
+        'rendezvous': rendezvous,
+        'factures': factures,
+        'titre_page': f"Détail de l'affaire : {affaire.reference}",
+    }
+    return render(request, 'affaire/detail_affaire.html', context)

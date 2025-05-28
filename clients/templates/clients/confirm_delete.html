@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Détails du Client</title>
+    <title>Supprimer le Client</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,7 +11,7 @@
             padding: 50px;
         }
         .container {
-            max-width: 600px;
+            max-width: 500px;
             margin: auto;
             background: #ffffff;
             padding: 20px;
@@ -20,12 +20,21 @@
         }
         h1 {
             text-align: center;
-        }
-        .client-info {
             margin-bottom: 20px;
         }
-        .client-info p {
-            margin: 5px 0;
+        .confirmation {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #dc3545; /* Rouge pour le bouton de suppression */
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #c82333;
         }
         a {
             color: #007bff;
@@ -38,21 +47,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Détails du Client</h1>
-        <div class="client-info">
-            <p><strong>Nom:</strong> {{ client.nom }}</p>
-            <p><strong>Email:</strong> {{ client.email }}</p>
-            <p><strong>Téléphone:</strong> {{ client.telephone }}</p>
+        <h1>Confirmez la Suppression</h1>
+        <div class="confirmation">
+            <p>Êtes-vous sûr de vouloir supprimer le client {{ client.nom }} ?</p>
         </div>
-        <h2>Affaires Associées</h2>
-        <ul>
-            {% for affaire in affaires %}
-                <li>{{ affaire.description }}</li>
-            {% empty %}
-                <li>Aucune affaire associée.</li>
-            {% endfor %}
-        </ul>
-        <a href="{% url 'clients:liste' %}">Retour à la liste des clients</a>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Supprimer</button>
+        </form>
+        <a href="{% url 'clients:liste' %}">Annuler</a>
     </div>
 </body>
 </html>

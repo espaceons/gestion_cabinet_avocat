@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titre_page }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1, h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
+        .info-block { margin-bottom: 15px; }
+        .info-block label { font-weight: bold; display: inline-block; width: 150px; }
+        .info-block span { display: inline-block; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 5px; }
+        .statut-en_cours { color: orange; font-weight: bold; }
+        .statut-cloture { color: green; font-weight: bold; }
+        .statut-annule { color: red; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        a { text-decoration: none; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>{{ titre_page }}</h1>
+
+    <div class="info-block">
+        <label>Référence :</label> <span>{{ affaire.reference }}</span>
+    </div>
+    <div class="info-block">
+        <label>Client :</label> <span><a href="#">{{ affaire.client.nom }}</a></span> {# Lien vers le détail du client (à implémenter) #}
+    </div>
+    <div class="info-block">
+        <label>Date d'ouverture :</label> <span>{{ affaire.date_ouverture|date:"d/m/Y" }}</span>
+    </div>
+    <div class="info-block">
+        <label>Statut :</label> <span class="statut-{{ affaire.statut|lower }}">{{ affaire.get_statut_display }}</span>
+    </div>
+    <div class="info-block">
+        <label>Description :</label> <span>{{ affaire.description|linebreaksbr }}</span>
+    </div>
+
+    ---
+
+    <h2>Documents liés</h2>
+    {% if documents %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fichier</th>
+                    <th>Date d'upload</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td><a href="{{ doc.fichier.url }}" target="_blank">{{ doc.fichier.name|slice:"150" }}</a></td> {# Affiche les 150 premiers caractères du nom du fichier #}
+                    <td>{{ doc.date_upload|date:"d/m/Y H:i" }}</td>
+                    <td><a href="#">Télécharger</a></td> {# Lien pour télécharger (le lien href est déjà le chemin, mais vous pouvez ajouter un bouton) #}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun document pour cette affaire.</p>
+    {% endif %}
+
+    ---
+
+    <h2>Rendez-vous</h2>
+    {% if rendezvous %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Participants</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rv in rendezvous %}
+                <tr>
+                    <td>{{ rv.titre }}</td>
+                    <td>{{ rv.date_debut|date:"d/m/Y H:i" }}</td>
+                    <td>{{ rv.date_fin|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% for participant in rv.participants.all %}
+                            {{ participant.get_full_name|default:participant.username }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Aucun
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun rendez-vous planifié pour cette affaire.</p>
+    {% endif %}
+
+    ---
+
+    <h2>Factures</h2>
+    {% if factures %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Montant</th>
+                    <th>Date d'émission</th>
+                    <th>Statut de paiement</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facture in factures %}
+                <tr>
+                    <td>{{ facture.montant }} €</td>
+                    <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                    <td class="statut-{{ facture.statut_paiement|lower }}">{{ facture.get_statut_paiement_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune facture pour cette affaire.</p>
+    {% endif %}
+
+    <p><a href="{% url 'affaire:liste_affaires' %}">Retour à la liste des affaires</a></p>
+</body>
+</html>

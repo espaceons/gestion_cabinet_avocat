@@ -70,6 +70,11 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'GCA.urls'
 
 AUTH_USER_MODEL = 'utilisateurs.Utilisateur'
+# URLs de redirection après connexion et déconnexion
+LOGIN_URL = 'login' # Nom de l'URL de connexion (définie dans urls.py)
+LOGIN_REDIRECT_URL = '/affaires/' # URL vers laquelle rediriger après une connexion réussie
+LOGOUT_REDIRECT_URL = '/' # URL vers laquelle rediriger après une déconnexion réussie
+
 
 TEMPLATES = [
     {

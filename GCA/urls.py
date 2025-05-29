@@ -17,9 +17,10 @@ urlpatterns = [
     # Applications métier
     path('clients/', include('clients.urls')),
     path('affaires/', include('affaire.urls')),
-    #path('calendrier/', include('calendrier.urls')),
-    #path('facturation/', include('facturation.urls')),
-    #path('documents/', include('dossiers.urls')),
+    #path('rendezvous/', include('rendezvous.urls')),
+    path('calendrier/', include('calendrier.urls')),
+    path('facturation/', include('facturation.urls')),
+    path('documents/', include('dossiers.urls')),
     
     # Page d'accueil
     #path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),

@@ -3,9 +3,10 @@ from clients.models import Client
 
 class Affaire(models.Model):
     STATUT_CHOICES = [
-        ("EN_COURS", "En cours"),
-        ("CLOTURE", "Clôturé"),
-        ("ANNULE", "Annulé"),
+        ('EN_ATTENTE', 'En attente'),
+        ('PAYE', 'Payé'),
+        ('PARTIELLEMENT_PAYE', 'Partiellement payé'),
+        ('ANNULE', 'Annulé'),
     ]
 
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Client associé")

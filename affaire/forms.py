@@ -1,27 +1,19 @@
+# affaires/forms.py
 from django import forms
 from .models import Affaire
+from clients.models import Client
+from utilisateurs.models import Utilisateur
 
 class AffaireForm(forms.ModelForm):
     class Meta:
         model = Affaire
-        fields = ['client', 'reference', 'date_ouverture', 'statut', 'description']
-        labels = {
-            'client': 'Client',
-            'reference': 'Référence',
-            'date_ouverture': 'Date d\'ouverture',
-            'statut': 'Statut',
-            'description': 'Description',
-        }
+        fields = ['reference', 'client', 'titre', 'description', 'date_ouverture', 'date_cloture', 'statut', 'avocat_responsable']
         widgets = {
-            'client': forms.Select(attrs={'class': 'form-control'}),
-            'reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Entrez la référence'}),
-            'date_ouverture': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'statut': forms.Select(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Entrez la description'}),
+            'date_ouverture': forms.DateInput(attrs={'type': 'date'}),
+            'date_cloture': forms.DateInput(attrs={'type': 'date'}),
         }
 
-        def clean_reference(self):
-            reference = self.cleaned_data.get('reference')
-            if Affaire.objects.filter(reference=reference).exists():
-                raise forms.ValidationError("Cette référence existe déjà.")
-            return reference
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['client'].queryset = Client.objects.all().order_by('nom')
+        self.fields['avocat_responsable'].queryset = Utilisateur.objects.filter(role='AVOCAT').order_by('first_name')

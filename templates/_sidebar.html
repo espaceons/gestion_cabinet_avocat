@@ -1,0 +1,42 @@
+{# templates/_sidebar.html #}
+{# Ce template est inclus dans base.html pour afficher la barre latérale de navigation. #}
+
+<h2>Menu</h2>
+<ul>
+    <li>
+        <a href="{% url 'affaire:liste_affaires' %}" 
+           class="{% if request.resolver_match.app_name == 'affaire' %}active{% endif %}">
+           Affaires
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'clients:liste' %}" class="">Clients</a> {# Placeholder, à remplacer par votre URL réelle #}
+    </li>
+    <li>
+        <a href="#" class="">Rendez-vous</a> {# Placeholder #}
+    </li>
+    <li>
+        <a href="#" class="">Documents</a> {# Placeholder #}
+    </li>
+    <li>
+        <a href="{% url 'facturation:liste_factures' %}"
+            class="{% if request.resolver_match.app_name == 'facturation' and request.resolver_match.view_name == 'liste_factures' %}active{% endif %}">
+            Facturation
+        </a> {# Placeholder #}
+    </li>
+    {% if user.is_authenticated %}
+        <li>
+            <a href="{% url 'utilisateurs:profil' %}" 
+               class="{% if request.resolver_match.view_name == 'profile' %}active{% endif %}">
+               Mon Profil
+            </a>
+        </li>
+        {% if user.is_superuser or user.is_staff %} {# Exemple: seulement pour les admins ou staff #}
+        <li>
+            <a href="{% url 'admin:index' %}" target="_blank">Administration</a>
+        </li>
+        {% endif %}
+    {% endif %}
+</ul>
+
+{# Vous pouvez ajouter d'autres sections ici, par exemple un mini-calendrier, des raccourcis, etc. #}

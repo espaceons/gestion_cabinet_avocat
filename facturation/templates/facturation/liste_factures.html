@@ -1,0 +1,43 @@
+{# facturation/templates/facturation/liste_factures.html #}
+{% extends "base.html" %}
+
+{% block title %}Liste des Factures - Cabinet Avocats{% endblock %}
+
+{% block content %}
+    <h1>Liste des Factures</h1>
+
+    {% if factures %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Référence</th> {# Ajout d'une colonne référence pour une meilleure identification #}
+                    <th>Affaire</th>
+                    <th>Montant</th>
+                    <th>Date d'émission</th>
+                    <th>Statut de paiement</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facture in factures %}
+                <tr>
+                    <td>FAC-{{ facture.pk }}</td> {# Simuler une référence basée sur le PK #}
+                    <td>{{ facture.affaire.reference }}</td>
+                    <td>{{ facture.montant }} €</td>
+                    <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                    <td class="statut-{{ facture.statut_paiement|lower }}">{{ facture.get_statut_paiement_display }}</td>
+                    <td>
+                        <a href="{% url 'facturation:detail_facture' pk=facture.pk %}">Voir Détails</a> | {# Lien vers la page de détail #}
+                        <a href="{% url 'facturation:modifier_facture' pk=facture.pk %}">Modifier</a> |
+                        <a href="{% url 'facturation:facture_pdf' pk=facture.pk %}" target="_blank">PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune facture disponible.</p>
+    {% endif %}
+
+    <p><a href="{% url 'facturation:creer_facture' %}">Ajouter une nouvelle facture</a></p>
+{% endblock %}

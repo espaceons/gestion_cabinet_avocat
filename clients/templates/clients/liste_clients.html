@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Liste des Clients - Cabinet Avocats{% endblock %}
+
+{% block content %}
+    <h1>Liste des Clients</h1>
+
+    {% if clients %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Adresse</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>{{ client.nom }}</td>
+                    <td>{{ client.type_client }}</td>
+                    <td>{{ client.email|default:"-" }}</td>
+                    <td>{{ client.telephone|default:"-" }}</td>
+                    <td>{{ client.adresse|linebreaksbr|default:"-" }}</td>
+                    <td>
+                        <a href="#">Voir Détails</a> |
+                        <a href="#">Modifier</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun client enregistré.</p>
+    {% endif %}
+
+    <p><a href="#">Ajouter un nouveau client</a></p>
+{% endblock %}

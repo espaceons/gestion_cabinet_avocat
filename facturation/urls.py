@@ -1,18 +1,14 @@
 from django.urls import path
-from .views import (
-    FactureListView,
-    FactureCreateView,
-    FactureDetailView,
-    FacturePDFView,
-    PaiementCreateView
-)
 
+from . import views
 app_name = 'facturation'
 
 urlpatterns = [
-    path('', FactureListView.as_view(), name='liste'),
-    path('nouvelle/', FactureCreateView.as_view(), name='creer'),
-    path('<int:pk>/', FactureDetailView.as_view(), name='detail'),
-    path('<int:pk>/pdf/', FacturePDFView.as_view(), name='pdf'),
-    path('<int:pk>/paiement/', PaiementCreateView.as_view(), name='paiement'),
+    
+    path('', views.liste_factures, name='liste_factures'),
+    path('creer/', views.creer_facture, name='creer_facture'),
+    path('modifier/<int:pk>/', views.modifier_facture, name='modifier_facture'),
+    path('pdf/<int:pk>/', views.FacturePDFView.as_view(), name='facture_pdf'),
+    # URL pour afficher les détails d'une facture
+    path('<int:pk>/', views.FactureDetailView.as_view(), name='detail_facture'), # Utilisez le PK pour identifier la facture
 ]

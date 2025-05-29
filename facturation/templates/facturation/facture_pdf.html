@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture #{{ facture.pk }}</title>
+    <style>
+        /* Styles CSS pour le PDF */
+        body {
+            font-family: 'Times New Roman', Times, serif; /* Police plus formelle pour PDF */
+            margin: 20mm; /* Marges de la page */
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            font-size: 20pt;
+            margin-bottom: 30px;
+        }
+        .header-info, .invoice-details, .client-info, .line-items, .total-summary {
+            margin-bottom: 20px;
+            border: 1px solid #eee; /* Bordure légère pour les sections */
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fcfcfc;
+        }
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none; /* Pas de bordure pour l'entête global */
+            background-color: transparent;
+            padding: 0;
+            margin-bottom: 40px;
+        }
+        .header-info .logo {
+            max-width: 150px;
+            height: auto;
+        }
+        .header-info .cabinet-details {
+            text-align: right;
+        }
+        .header-info .cabinet-details p {
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .invoice-details table, .client-info table, .line-items table, .total-summary table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .invoice-details th, .client-info th, .line-items th, .total-summary th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f5f5f5;
+        }
+        .invoice-details td, .client-info td, .line-items td, .total-summary td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .line-items th:nth-child(3), .line-items td:nth-child(3),
+        .line-items th:nth-child(4), .line-items td:nth-child(4) {
+            text-align: right; /* Aligne Montant HT et TVA à droite */
+        }
+        .line-items th:nth-child(5), .line-items td:nth-child(5) {
+            text-align: right; /* Aligne Total TTC à droite */
+            font-weight: bold;
+        }
+
+        .total-summary {
+            width: 40%; /* Pour aligner le résumé total à droite */
+            margin-left: auto;
+            text-align: right;
+            border-top: 2px solid #2c3e50; /* Bordure plus marquée */
+            margin-top: 30px;
+            padding-top: 15px;
+            padding-bottom: 0;
+        }
+        .total-summary td {
+            border: none; /* Supprime les bordures internes */
+            padding: 5px 0;
+        }
+        .total-summary .label {
+            font-weight: bold;
+            text-align: left; /* Align labels left within the summary block */
+        }
+        .total-summary .amount {
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: right; /* Align amounts right within the summary block */
+        }
+        .total-summary tr:last-child .amount {
+            font-size: 1.3em;
+            color: #007bff;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 8pt;
+            color: #777;
+            margin-top: 50px;
+        }
+        
+        /* Pour gérer la pagination si la facture est longue */
+        @page {
+            size: A4;
+            margin: 20mm;
+            @bottom-center {
+                content: "Page " counter(page) " sur " counter(pages);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-info">
+        <div>
+            {# Si vous avez un logo, assurez-vous que le chemin est correct et absolu #}
+            {# <img src="{{ logo_path }}" alt="Logo Cabinet" class="logo"> #}
+        </div>
+        <div class="cabinet-details">
+            <p><strong>{{ cabinet_nom }}</strong></p>
+            <p>{{ cabinet_adresse|linebreaksbr }}</p>
+            <p>Tél: {{ cabinet_telephone }}</p>
+            <p>Email: {{ cabinet_email }}</p>
+        </div>
+    </div>
+
+    <h1>FACTURE</h1>
+
+    <div class="invoice-details">
+        <table>
+            <tr>
+                <th>Numéro de Facture:</th>
+                <td>FAC-{{ facture.pk }}</td>
+            </tr>
+            <tr>
+                <th>Date d'Émission:</th>
+                <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <th>Statut de Paiement:</th>
+                <td>{{ facture.get_statut_paiement_display }}</td>
+            </tr>
+            <tr>
+                <th>Affaire liée:</th>
+                <td>{{ facture.affaire.reference }} ({{ facture.affaire.client.nom }})</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="client-info">
+        <h2>Client</h2>
+        <table>
+            <tr>
+                <th>Nom du Client:</th>
+                <td>{{ facture.affaire.client.nom }}</td>
+            </tr>
+            <tr>
+                <th>Adresse:</th>
+                <td>{{ facture.affaire.client.adresse|linebreaksbr }}</td>
+            </tr>
+            <tr>
+                <th>Email:</th>
+                <td>{{ facture.affaire.client.email|default:"Non renseigné" }}</td>
+            </tr>
+            <tr>
+                <th>Téléphone:</th>
+                <td>{{ facture.affaire.client.telephone|default:"Non renseigné" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="line-items">
+        <h2>Détails de la Facture</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantité</th>
+                    <th>Prix Unitaire</th>
+                    <th>Montant HT</th>
+                    <th>TVA (20%)</th>
+                    <th>Total TTC</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Cette partie suppose que vous avez un modèle LigneFacture ou une méthode pour obtenir les détails des prestations #}
+                {# Pour l'exemple, nous allons simuler des lignes de facture. Adaptez ceci à votre modèle réel. #}
+                {% comment %}
+                {% for ligne in facture.lignes_facture.all %} {# Si vous avez un ManyToMany ou ForeignKey de LigneFacture vers Facture #}
+                <tr>
+                    <td>{{ ligne.description }}</td>
+                    <td>{{ ligne.quantite }}</td>
+                    <td>{{ ligne.prix_unitaire|floatformat:2 }} €</td>
+                    <td>{{ ligne.montant_ht|floatformat:2 }} €</td>
+                    <td>{{ ligne.tva|floatformat:2 }} €</td>
+                    <td>{{ ligne.total_ttc|floatformat:2 }} €</td>
+                </tr>
+                {% endfor %}
+                {% endcomment %}
+                
+                {# Exemple simplifié si vous n'avez pas de modèle de LigneFacture détaillé #}
+                <tr>
+                    <td>Honoraires juridiques - Affaire {{ facture.affaire.reference }}</td>
+                    <td>1</td>
+                    <td>{{ facture.montant|floatformat:2 }} €</td>
+                    <td>{{ facture.montant|floatformat:2 }} €</td>
+                    {# Calcul de TVA et TTC pour l'exemple #}
+                    <td>{{ (facture.montant * 0.20)|floatformat:2 }} €</td>
+                    <td>{{ (facture.montant * 1.20)|floatformat:2 }} €</td>
+                </tr>
+                <tr>
+                    <td>Frais de dossier</td>
+                    <td>1</td>
+                    <td>50.00 €</td>
+                    <td>50.00 €</td>
+                    <td>10.00 €</td>
+                    <td>60.00 €</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-summary">
+        <table>
+            <tr>
+                <td class="label">Montant Total HT:</td>
+                <td class="amount">{{ facture.montant|floatformat:2 }} €</td>
+            </tr>
+            <tr>
+                <td class="label">TVA (20%):</td>
+                {# Ici, vous devrez calculer la TVA totale si vous avez plusieurs lignes #}
+                <td class="amount">{{ (facture.montant * 0.20)|floatformat:2 }} €</td> 
+            </tr>
+            <tr>
+                <td class="label">Montant Total TTC:</td>
+                <td class="amount">{{ (facture.montant * 1.20)|floatformat:2 }} €</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Merci pour votre confiance. En cas de question, n'hésitez pas à nous contacter.</p>
+        <p>N° SIRET: XXXXXXXXXXXXXX | N° TVA Intracommunautaire: FRXXXXXXXXXXXXXXXX</p>
+    </div>
+</body>
+</html>

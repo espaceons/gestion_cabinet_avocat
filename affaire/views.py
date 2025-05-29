@@ -1,5 +1,7 @@
 # affaire/views.py
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from affaire.forms import AffaireForm
 from .models import Affaire
 from django.contrib.auth.decorators import login_required # Pour restreindre l'accès aux utilisateurs connectés
 
@@ -35,3 +37,35 @@ def detail_affaire(request, pk):
         'titre_page': f"Détail de l'affaire : {affaire.reference}",
     }
     return render(request, 'affaire/detail_affaire.html', context)
+
+
+@login_required
+def creer_affaire(request):
+    if request.method == 'POST':
+        form = AffaireForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'L\'affaire a été créée avec succès !')
+            return redirect('affaire:liste_affaires')
+        else:
+            messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
+    else:
+        form = AffaireForm()
+    return render(request, 'affaires/affaire_form.html', {'form': form, 'titre_page': 'Créer une Affaire'})
+
+@login_required
+def modifier_affaire(request, pk):
+    affaire = get_object_or_404(Affaire, pk=pk)
+    if request.method == 'POST':
+        form = AffaireForm(request.POST, instance=affaire)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'L\'affaire a été mise à jour avec succès !')
+            return redirect('affaire:detail_affaire', pk=affaire.pk)
+        else:
+            messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
+    else:
+        form = AffaireForm(instance=affaire)
+    return render(request, 'affaires/affaire_form.html', {'form': form, 'titre_page': 'Modifier l\'Affaire'})
+
+# Ajoutez ici des vues pour les clients, rendez-vous, documents, factures si vous les gérez dans leurs propres applications

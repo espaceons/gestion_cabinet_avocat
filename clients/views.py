@@ -7,7 +7,7 @@ from .forms import ClientForm
 
 class ClientListView(LoginRequiredMixin, ListView):
     model = Client
-    template_name = 'clients/liste.html'
+    template_name = 'clients/liste_clients.html'
     context_object_name = 'clients'
     paginate_by = 20
 
@@ -31,7 +31,7 @@ class ClientCreateView(PermissionRequiredMixin, CreateView):
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
     model = Client
-    template_name = 'clients/detail.html'
+    template_name = 'clients/detail_client.html'
     context_object_name = 'client'
 
     def get_context_data(self, **kwargs):

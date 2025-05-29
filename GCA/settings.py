@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'communication',
     'affaire',
     'utilisateurs',
+    'rendezvous',
+    
 ]
 
 MIDDLEWARE = [

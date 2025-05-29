@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Liste des Documents - Cabinet Avocats{% endblock %}
+
+{% block content %}
+    <h1>Liste des Documents</h1>
+
+    {% if documents %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fichier</th>
+                    <th>Date d'upload</th>
+                    <th>Affaire</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td><a href="{{ doc.fichier.url }}" target="_blank">{{ doc.fichier.name|slice:"100" }}</a></td>
+                    <td>{{ doc.date_upload|date:"d/m/Y H:i" }}</td>
+                    <td>{{ doc.affaire.reference }}</td>
+                    <td>
+                        <a href="#">Télécharger</a> |
+                        <a href="#">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun document disponible.</p>
+    {% endif %}
+
+    <p><a href="#">Ajouter un nouveau document</a></p>
+{% endblock %}

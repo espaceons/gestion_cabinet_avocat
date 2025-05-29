@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titre_page }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .statut-en_cours { color: orange; font-weight: bold; }
-        .statut-cloture { color: green; font-weight: bold; }
-        .statut-annule { color: red; font-weight: bold; }
-        a { text-decoration: none; color: #007bff; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}{{ titre_page }} - Cabinet Avocats{% endblock %}
+
+{% block content %}
     <h1>{{ titre_page }}</h1>
 
     {% if affaires %}
@@ -38,11 +23,11 @@
                     <td>{{ affaire.client.nom }}</td>
                     <td>{{ affaire.date_ouverture|date:"d/m/Y" }}</td>
                     <td class="statut-{{ affaire.statut|lower }}">
-                        {{ affaire.get_statut_display }} {# Affiche le libellé du choix #}
+                        {{ affaire.get_statut_display }}
                     </td>
                     <td>
                         <a href="{% url 'affaire:detail_affaire' pk=affaire.pk %}">Voir Détails</a>
-                        {# Ajoutez d'autres liens ici, par exemple Modifier, Supprimer #}
+                        {# Ajoutez d'autres liens ici #}
                     </td>
                 </tr>
                 {% endfor %}
@@ -52,6 +37,5 @@
         <p>Aucune affaire n'est enregistrée pour le moment.</p>
     {% endif %}
 
-    <p><a href="#">Ajouter une nouvelle affaire</a></p> {# Lien pour ajouter une nouvelle affaire (à implémenter) #}
-</body>
-</html>
+    <p><a href="#">Ajouter une nouvelle affaire</a></p>
+{% endblock %}

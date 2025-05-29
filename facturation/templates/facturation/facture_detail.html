@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titre_page }} - Cabinet Avocats{% endblock %}
+
+{% block content %}
+    <div class="detail-container">
+        <h1>Détails de la Facture #{{ facture.pk }}</h1>
+
+        <div class="info-section">
+            <h2>Informations Générales</h2>
+            <table>
+                <tr>
+                    <th>Numéro de Facture:</th>
+                    <td>FAC-{{ facture.pk }}</td>
+                </tr>
+                <tr>
+                    <th>Affaire liée:</th>
+                    <td>
+                        {% if facture.affaire %}
+                            <a href="{% url 'affaire:detail_affaire' pk=facture.affaire.pk %}">{{ facture.affaire.reference }}</a>
+                            (Client: {{ facture.affaire.client.nom }})
+                        {% else %}
+                            Aucune affaire liée
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Date d'Émission:</th>
+                    <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                </tr>
+                <tr>
+                    <th>Montant Total:</th>
+                    <td>{{ facture.montant|floatformat:2 }} €</td>
+                </tr>
+                <tr>
+                    <th>Statut de Paiement:</th>
+                    <td class="statut-{{ facture.statut_paiement|lower }}">{{ facture.get_statut_paiement_display }}</td>
+                </tr>
+            </table>
+        </div>
+
+        {% comment %}
+        Si vous avez des détails de lignes de facture (modèle LigneFacture lié à Facture),
+        vous pouvez ajouter une section ici pour les lister.
+        Exemple :
+        <div class="info-section">
+            <h2>Détails des Prestations</h2>
+            {% if facture.lignes_facture.all %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantité</th>
+                            <th>Prix Unitaire</th>
+                            <th>Montant HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ligne in facture.lignes_facture.all %}
+                        <tr>
+                            <td>{{ ligne.description }}</td>
+                            <td>{{ ligne.quantite }}</td>
+                            <td>{{ ligne.prix_unitaire|floatformat:2 }} €</td>
+                            <td>{{ ligne.montant_ht|floatformat:2 }} €</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Aucun détail de prestation pour cette facture.</p>
+            {% endif %}
+        </div>
+        {% endcomment %}
+
+
+        <div class="actions-links">
+            <a href="{% url 'facturation:modifier_facture' pk=facture.pk %}" class="btn-action btn-edit">Modifier la facture</a>
+            <a href="{% url 'facturation:facture_pdf' pk=facture.pk %}" class="btn-action btn-pdf" target="_blank">Générer PDF</a>
+            <a href="{% url 'facturation:liste_factures' %}" class="btn-action btn-back">Retour à la liste</a>
+        </div>
+    </div>
+
+    {% block extra_head %}
+        <style>
+            .detail-container {
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                max-width: 800px;
+                margin: 20px auto;
+            }
+            h1 {
+                color: #2c3e50;
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .info-section {
+                margin-bottom: 25px;
+                border: 1px solid #eee;
+                border-radius: 5px;
+                padding: 15px;
+            }
+            .info-section h2 {
+                color: #007bff;
+                margin-top: 0;
+                margin-bottom: 15px;
+                font-size: 1.3em;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            }
+            .info-section table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .info-section th, .info-section td {
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #f2f2f2;
+            }
+            .info-section th {
+                width: 30%; /* Largeur pour les labels */
+                background-color: #f9f9f9;
+                font-weight: bold;
+                color: #444;
+            }
+            .info-section tr:last-child td {
+                border-bottom: none;
+            }
+            /* Styles pour les statuts de paiement */
+            .statut-paye { color: green; font-weight: bold; }
+            .statut-en_attente { color: orange; font-weight: bold; }
+            .statut-annule { color: red; font-weight: bold; }
+            .statut-partiellement_paye { color: #8a6d3b; font-weight: bold; } /* Couleur pour avertissement */
+
+            .actions-links {
+                text-align: center;
+                margin-top: 30px;
+            }
+            .btn-action {
+                display: inline-block;
+                padding: 10px 20px;
+                margin: 0 10px;
+                border-radius: 5px;
+                text-decoration: none;
+                color: white;
+                font-weight: bold;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+            }
+            .btn-edit { background-color: #007bff; }
+            .btn-edit:hover { background-color: #0056b3; transform: translateY(-2px); }
+            .btn-pdf { background-color: #dc3545; } /* Rouge pour le PDF */
+            .btn-pdf:hover { background-color: #c82333; transform: translateY(-2px); }
+            .btn-back { background-color: #6c757d; } /* Gris pour retour */
+            .btn-back:hover { background-color: #5a6268; transform: translateY(-2px); }
+        </style>
+    {% endblock %}
+{% endblock %}

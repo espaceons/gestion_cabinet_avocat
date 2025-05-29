@@ -51,9 +51,7 @@ INSTALLED_APPS = [
     'calendrier',
     'communication',
     'affaire',
-    'utilisateurs',
-    'rendezvous',
-    
+    'utilisateurs',    
 ]
 
 MIDDLEWARE = [
@@ -151,6 +149,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# Taille maximale d'upload (10MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+
+
 if DEBUG:
     STATICFILES_DIRS = [
         BASE_DIR / "static",  # Ajuster selon votre structure de répertoire

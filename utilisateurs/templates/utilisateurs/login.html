@@ -1,18 +1,28 @@
-{% extends "base.html" %} {# Indique que ce template hérite de base.html #}
+{% extends "base_auth.html" %} {# <-- MODIFICATION ICI ! Hérite de base_auth.html #}
 
-{% block title %}{{ titre_page|default:"Connexion" }} - Cabinet Avocats{% endblock %} {# Remplace le titre du block 'title' #}
+{% block title %}{{ titre_page|default:"Connexion" }} - Cabinet Avocats{% endblock %}
 
 {% block extra_head %}
-    {# Styles spécifiques à la page de connexion, si besoin. Sinon, vous pouvez supprimer ce block. #}
+    {# Styles spécifiques à la page de connexion #}
     <style>
         body {
-            /* Ces styles peuvent être écrasés ou complétés par base.html */
+            /* Ces styles sont maintenant principalement gérés par base_auth.html ou directement ici */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f0f2f5; /* S'assure que le fond reste le même */
-            margin: 0; /* Important pour le centrage */
+            background-color: #f0f2f5;
+            margin: 0;
+            font-family: sans-serif; /* Assurez-vous d'avoir une police définie */
+        }
+        /* Le 'main.container' de base.html n'existe plus ici, donc pas besoin de le surcharger */
+        main { /* Cibler directement la balise main de base_auth.html */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            height: 100vh; /* Permet à main de prendre toute la hauteur disponible */
+            width: 100%; /* S'assure qu'il prend toute la largeur */
         }
         .login-container {
             background-color: #ffffff;
@@ -23,20 +33,6 @@
             max-width: 400px;
             text-align: center;
             box-sizing: border-box;
-            /* Pas de margin: 20px auto; ici car le body gère le centrage global */
-        }
-        /* Cache le container de base.html qui n'est pas nécessaire ici */
-        main.container {
-            max-width: initial; /* Réinitialise la largeur max du main container */
-            margin: 0; /* Annule le centrage du main container */
-            padding: 0; /* Annule le padding du main container */
-            background-color: initial; /* Annule le fond blanc */
-            box-shadow: none; /* Annule l'ombre */
-            display: flex; /* Pour centrer le login-container */
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1; /* Permet à main de prendre de la place */
-            height: 100vh; /* S'assure qu'il prend toute la hauteur */
         }
         /* Styles du formulaire */
         h1 {
@@ -110,13 +106,11 @@
     </style>
 {% endblock %}
 
-{% block content %} {# Le contenu principal de cette page sera inséré ici #}
-    {# Remplacez le conteneur central de base.html par votre conteneur de connexion #}
+{% block content %}
     <div class="login-container">
         <h1>Connexion</h1>
 
-        {# Les messages de Django sont déjà gérés dans base.html, donc pas besoin de les répéter ici #}
-        {# {% if messages %} ... {% endif %} #}
+        {# Les messages de Django seront maintenant gérés par base_auth.html #}
 
         <form method="post">
             {% csrf_token %}

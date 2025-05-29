@@ -1,37 +1,55 @@
-{% extends "base.html" %}
-
-{% block title %}Liste des Documents - Cabinet Avocats{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-    <h1>Liste des Documents</h1>
+<div class="container mt-4">
+    <h2>Gestion des Documents</h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'dossier:document_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter un Document
+        </a>
+    </div>
 
-    {% if documents %}
-        <table>
+    <div class="table-responsive">
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Fichier</th>
-                    <th>Date d'upload</th>
+                    <th>Titre</th>
                     <th>Affaire</th>
+                    <th>Date</th>
+                    <th>Type</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for doc in documents %}
                 <tr>
-                    <td><a href="{{ doc.fichier.url }}" target="_blank">{{ doc.fichier.name|slice:"100" }}</a></td>
-                    <td>{{ doc.date_upload|date:"d/m/Y H:i" }}</td>
+                    <td>{{ doc.titre }}</td>
                     <td>{{ doc.affaire.reference }}</td>
+                    <td>{{ doc.date_upload|date:"d/m/Y H:i" }}</td>
+                    <td>{{ doc.extension }}</td>
                     <td>
-                        <a href="#">Télécharger</a> |
-                        <a href="#">Supprimer</a>
+                        <a href="{{ doc.fichier.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'dossier:document_download' doc.pk %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-download"></i>
+                        </a>
+                        <a href="{% url 'dossier:document_update' doc.pk %}" class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'dossier:document_delete' doc.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Aucun document disponible</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-        <p>Aucun document disponible.</p>
-    {% endif %}
-
-    <p><a href="#">Ajouter un nouveau document</a></p>
+    </div>
+</div>
 {% endblock %}

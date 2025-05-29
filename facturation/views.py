@@ -4,7 +4,7 @@ from django.views.generic import DetailView # Pour afficher les détails d'un ob
 from django.http import HttpResponse
 from django.template.loader import render_to_string # Pour charger le template HTML
 from GCA import settings
-from weasyprint import HTML, CSS # Importez WeasyPrint
+
 from django.contrib.auth.mixins import LoginRequiredMixin # Pour protéger la vue
 # facturation/views.py
 from django.shortcuts import render, redirect, get_object_or_404
@@ -14,46 +14,7 @@ from .models import Facture, Affaire # Assurez-vous d'importer vos modèles
 from .forms import FactureForm # Importez votre FactureForm
 
 
-class FacturePDFView(WeasyTemplateResponseMixin, DetailView):
-    """
-    Génère une facture PDF à partir d'un template Django.
-    """
-    model = Facture
-    template_name = 'facturation/facture_pdf.html' # Le template HTML qui sera converti en PDF
-    
-    # Nom du fichier PDF de sortie. Utilisez des variables du contexte si besoin.
-    # On utilise 'filename' au lieu de 'pdf_filename' pour le mixin plus récent de django-weasyprint
-    pdf_attachment = True # Définit si le fichier doit être téléchargé (True) ou affiché dans le navigateur (False)
-    
-    def get_filename(self):
-        """
-        Définit le nom du fichier PDF à télécharger.
-        """
-        # Récupère l'objet facture actuel pour nommer le fichier
-        facture = self.get_object()
-        return f"facture_{facture.pk}_{facture.date_emission|date:'Ymd'}.pdf"
 
-    def get_context_data(self, **kwargs):
-        """
-        Ajoute des données supplémentaires au contexte du template si nécessaire.
-        """
-        context = super().get_context_data(**kwargs)
-        # Vous pouvez ajouter ici des informations sur votre cabinet par exemple
-        context['cabinet_nom'] = "Cabinet Avocats ABC"
-        context['cabinet_adresse'] = "123 Rue de la Justice, 75001 Paris"
-        context['cabinet_telephone'] = "01 23 45 67 89"
-        context['cabinet_email'] = "contact@cabinetabc.com"
-        
-        # Pour les images et les styles dans le PDF, il est crucial d'avoir des chemins absolus
-        # WeasyPrint gère généralement bien les chemins relatifs si STATIC_URL est configuré,
-        # mais pour plus de robustesse, surtout pour les logos, un chemin absolu est recommandé.
-        # Vous devrez vous assurer que votre logo est dans votre dossier staticfiles
-        # par exemple: static/img/logo.png
-        context['logo_path'] = f"{settings.STATIC_ROOT}/img/logo.png" # Chemin absolu vers le logo si utilisé
-        # Ou si vous utilisez STATIC_URL et que WeasyPrint le gère:
-        # context['logo_url'] = settings.STATIC_URL + 'img/logo.png' 
-        
-        return context
 
 
 

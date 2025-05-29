@@ -12,6 +12,8 @@ class Utilisateur(AbstractUser):
         ("AVOCAT", "Avocat"),
         ("SECRETAIRE", "Secrétaire")
     ]
+    adresse = models.TextField()
+    telephone = models.CharField(max_length=12, null=True, blank=True)
     role = models.CharField( max_length=20, choices=ROLE_CHOICES, default="SECRETAIRE", # Rôle par défaut si non spécifié
         verbose_name="Rôle",
         help_text="Le rôle de l'utilisateur au sein du cabinet (Avocat ou Secrétaire)."

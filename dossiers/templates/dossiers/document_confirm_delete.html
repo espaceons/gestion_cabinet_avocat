@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4>Confirmer la suppression</h4>
+        </div>
+        <div class="card-body">
+            <p>Êtes-vous sûr de vouloir supprimer ce document ?</p>
+            <p><strong>{{ object.titre }}</strong> ({{ object.affaire.reference }})</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Confirmer
+                </button>
+                <a href="{% url 'dossier:document_list' %}" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

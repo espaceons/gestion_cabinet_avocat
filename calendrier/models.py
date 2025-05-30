@@ -13,7 +13,7 @@ class RendezVous(models.Model):
     date_fin = models.DateTimeField()
     lieu = models.CharField(max_length=200, blank=True)
     affaire = models.ForeignKey( Affaire, on_delete=models.SET_NULL, null=True, blank=True, related_name='rendezvous', verbose_name="Affaire associée" )
-    participants = models.ManyToManyField(User, related_name='rendez_vous')
+    participants = models.ManyToManyField(User, related_name='rendez_vous', null=True, blank=True)
     createur = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rendez_vous_crees')
 
     class Meta:

@@ -5,7 +5,7 @@ from django.utils import timezone
 from utilisateurs.models import Utilisateur
 
 class Document(models.Model):
-    affaire = models.ForeignKey( Affaire,  on_delete=models.CASCADE,     related_name='documents',        verbose_name="Affaire associée"    )
+    affaire = models.ForeignKey( Affaire,  on_delete=models.CASCADE, related_name='documents', verbose_name="Affaire associée" )
     titre = models.CharField(max_length=200, verbose_name="Titre du document")
     fichier = models.FileField( upload_to="documents/%Y/%m/%d/", verbose_name="Fichier" )
     date_upload = models.DateTimeField( auto_now_add=True, verbose_name="Date d'upload" )

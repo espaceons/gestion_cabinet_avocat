@@ -12,36 +12,15 @@ class Affaire(models.Model):
         ('CLOTURE', 'Clôturé'),
     ]
 
-    client = models.ForeignKey(
-        Client,
-        on_delete=models.CASCADE,
-        verbose_name="Client associé",
-        related_name="affaires"
-    )
+    client = models.ForeignKey( Client, on_delete=models.CASCADE, verbose_name="Client associé", related_name="affaires")
     
-    reference = models.CharField(
-        max_length=50,
-        unique=True,
-        verbose_name="Référence de l'affaire"
-    )
+    reference = models.CharField( max_length=50, unique=True, verbose_name="Référence de l'affaire")
     
-    date_ouverture = models.DateField(
-        verbose_name="Date d'ouverture",
-        null=True,
-        blank=True
-    )
+    date_ouverture = models.DateField( verbose_name="Date d'ouverture", null=True, blank=True)
     
-    statut = models.CharField(
-        max_length=20,
-        choices=STATUT_CHOICES,
-        verbose_name="Statut de l'affaire",
-        default='EN_ATTENTE'
-    )
+    statut = models.CharField( max_length=20, choices=STATUT_CHOICES, verbose_name="Statut de l'affaire", default='EN_ATTENTE')
     
-    description = models.TextField(
-        verbose_name="Description détaillée",
-        blank=True
-    )
+    description = models.TextField( verbose_name="Description détaillée", blank=True )
     
     avocat_responsable = models.ForeignKey(
         Utilisateur,  # Utilisation de votre modèle personnalisé
@@ -53,24 +32,11 @@ class Affaire(models.Model):
         limit_choices_to={'role': 'AVOCAT'}  # Restreint le choix aux utilisateurs avec rôle AVOCAT
     )
     
-    titre = models.CharField(
-        max_length=200,
-        verbose_name="Titre de l'affaire"
-    )
+    titre = models.CharField( max_length=200, verbose_name="Titre de l'affaire" )
     
-    date_cloture = models.DateField(
-        verbose_name="Date de clôture",
-        null=True,
-        blank=True
-    )
+    date_cloture = models.DateField( verbose_name="Date de clôture", null=True, blank=True )
     
-    frais = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Frais juridiques",
-        default=0.00,
-        validators=[MinValueValidator(0)]
-    )
+    frais = models.DecimalField( max_digits=10, decimal_places=2, verbose_name="Frais juridiques", default=0.00, validators=[MinValueValidator(0)] )
 
     class Meta:
         verbose_name = "Affaire"

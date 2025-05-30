@@ -1,132 +1,375 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titre_page }}</title>
+{% extends "base.html" %} {# Assurez-vous que cette page hérite de votre base.html responsive #}
+
+{% block title %}Détail de l'Affaire : {{ affaire.reference }}{% endblock %}
+
+{% block extra_head %}
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-        h1, h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
-        .info-block { margin-bottom: 15px; }
-        .info-block label { font-weight: bold; display: inline-block; width: 150px; }
-        .info-block span { display: inline-block; }
-        ul { list-style: none; padding: 0; }
-        li { margin-bottom: 5px; }
-        .statut-en_cours { color: orange; font-weight: bold; }
-        .statut-cloture { color: green; font-weight: bold; }
-        .statut-annule { color: red; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        a { text-decoration: none; color: #007bff; }
-        a:hover { text-decoration: underline; }
+        /* Styles spécifiques à la page de détail d'affaire */
+        .detail-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            max-width: 900px; /* Adaptez la largeur maximale */
+            margin: 30px auto;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            border-bottom: 1px dashed #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 ou 3 colonnes sur grand écran */
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-block {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #fcfcfc;
+        }
+        .info-block label {
+            font-weight: bold;
+            color: #495057;
+            display: block; /* Chaque label sur sa propre ligne */
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+        .info-block span {
+            color: #343a40;
+            font-size: 1.1em;
+            display: block;
+        }
+
+        /* Styles spécifiques pour les statuts */
+        .statut-ouvert { color: #007bff; font-weight: bold; }
+        .statut-en_cours { color: #ffc107; font-weight: bold; } /* Jaune/Orange pour en cours */
+        .statut-ferme { color: #28a745; font-weight: bold; } /* Vert pour fermé */
+
+        /* Styles pour les tables de données */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: #fff;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa; /* Lignes alternées */
+        }
+        tbody tr:hover {
+            background-color: #e2f0fb; /* Survol des lignes */
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Boutons d'action */
+        .action-buttons {
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: inline-flex; /* Pour centrer le texte/icône si besoin */
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+            border: 1px solid #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #138496;
+            transform: translateY(-1px);
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: 1px solid #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .detail-container {
+                margin: 15px;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+            h2 {
+                font-size: 1.4em;
+                margin-top: 30px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr; /* Une seule colonne sur mobile */
+                gap: 15px;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block; /* Rend la table responsive en empilant les éléments */
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr { border: 1px solid #dee2e6; margin-bottom: 10px; }
+            td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+            td:before {
+                content: attr(data-label); /* Utilise l'attribut data-label pour afficher l'en-tête */
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                text-align: left;
+                color: #555;
+            }
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
     </style>
-</head>
-<body>
-    <h1>{{ titre_page }}</h1>
+{% endblock %}
 
-    <div class="info-block">
-        <label>Référence :</label> <span>{{ affaire.reference }}</span>
+{% block content %}
+    <div class="detail-container">
+        <h1>Détail de l'Affaire : {{ affaire.reference }}</h1>
+
+        <div class="info-grid">
+            <div class="info-block">
+                <label>Titre :</label> <span>{{ affaire.titre }}</span>
+            </div>
+            <div class="info-block">
+                <label>Référence :</label> <span>{{ affaire.reference }}</span>
+            </div>
+            <div class="info-block">
+                <label>Client :</label>
+                <span>
+                    {% if affaire.client %}
+                        <a href="{% url 'clients:detail_client' pk=affaire.client.pk %}">{{ affaire.client.nom }}</a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-block">
+                <label>Avocat Responsable :</label>
+                <span>
+                    {% if affaire.avocat_responsable %}
+                        {{ affaire.avocat_responsable.get_full_name|default:affaire.avocat_responsable.username }}
+                    {% else %}
+                        Non assigné
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-block">
+                <label>Date de création :</label> <span>{{ affaire.date_creation|date:"d/m/Y" }}</span>
+            </div>
+            <div class="info-block">
+                <label>Statut :</label> <span class="statut-{{ affaire.statut|lower }}">{{ affaire.get_statut_display }}</span>
+            </div>
+        </div>
+
+        <div class="info-block" style="grid-column: 1 / -1;"> {# Pour que la description prenne toute la largeur #}
+            <label>Description :</label> <span>{{ affaire.description|linebreaksbr|default:"Aucune description fournie." }}</span>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{% url 'affaire:modifier_affaire' pk=affaire.pk %}" class="btn btn-primary">Modifier l'Affaire</a>
+            {# Ajoutez un bouton pour supprimer si nécessaire, avec une confirmation JS #}
+            {# <a href="{% url 'affaire:supprimer_affaire' pk=affaire.pk %}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette affaire ?');">Supprimer l'Affaire</a> #}
+            <a href="{% url 'dossiers:modifier' pk=affaire.pk %}" class="btn btn-info">Ajouter un document</a>
+            {# Ajoutez ici d'autres boutons pour créer RV, facture, etc. #}
+        </div>
+
+        ---
+
+        <h2>Documents liés</h2>
+        {% if documents %} {# <--- Nom de variable corrigé #}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fichier</th>
+                        <th>Date d'upload</th>
+                        <th>Uploader</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %} {# <--- Nom de variable corrigé #}
+                    <tr>
+                        <td data-label="Fichier"><a href="{{ doc.fichier.url }}" target="_blank">{{ doc.titre }}</a></td>
+                        <td data-label="Date d'upload">{{ doc.date_upload|date:"d/m/Y H:i" }}</td>
+                        <td data-label="Uploader">
+                            {% if doc.uploader %}
+                                {{ doc.uploader.get_full_name|default:doc.uploader.username }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td data-label="Actions">
+                            <a href="{{ doc.fichier.url }}" download="{{ doc.fichier.name }}">Télécharger</a> |
+                            <a href="{% url 'dossiers:detail_document' pk=doc.pk %}">Voir Détail</a>
+                            {# Ajouter ici des liens pour modifier/supprimer document #}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucun document pour cette affaire.</p>
+        {% endif %}
+
+        ---
+
+        <h2>Rendez-vous</h2>
+        {% if rendezvous %} {# <--- Nom de variable corrigé #}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>Lieu</th>
+                        <th>Participants</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rv in rendezvous %} {# <--- Nom de variable corrigé #}
+                    <tr>
+                        <td data-label="Titre">{{ rv.titre }}</td>
+                        <td data-label="Début">{{ rv.date_debut|date:"d/m/Y H:i" }}</td>
+                        <td data-label="Fin">{{ rv.date_fin|date:"d/m/Y H:i" }}</td>
+                        <td data-label="Lieu">{{ rv.lieu|default:"Non spécifié" }}</td>
+                        <td data-label="Participants">
+                            {% for participant in rv.participants.all %}
+                                {{ participant.get_full_name|default:participant.username }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                Aucun
+                            {% endfor %}
+                        </td>
+                        <td data-label="Actions">
+                            <a href="{% url 'calendrier:modifier_rendezvous' pk=rv.pk %}">Modifier</a> |
+                            <a href="{% url 'calendrier:supprimer_rendezvous' pk=rv.pk %}">Supprimer</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucun rendez-vous planifié pour cette affaire.</p>
+        {% endif %}
+
+        ---
+
+        <h2>Factures</h2>
+        {% if factures %} {# <--- Nom de variable corrigé #}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Montant</th>
+                        <th>Date d'émission</th>
+                        <th>Statut de paiement</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for facture in factures %} {# <--- Nom de variable corrigé #}
+                    <tr>
+                        <td data-label="Montant">{{ facture.montant }} €</td>
+                        <td data-label="Date d'émission">{{ facture.date_emission|date:"d/m/Y" }}</td>
+                        <td data-label="Statut de paiement" class="statut-{{ facture.statut_paiement|lower }}">{{ facture.get_statut_paiement_display }}</td>
+                        <td data-label="Actions">
+                            <a href="{% url 'facturation:detail_facture' pk=facture.pk %}">Voir Détail</a>
+                            {# Ajouter ici des liens pour modifier/supprimer facture #}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucune facture pour cette affaire.</p>
+        {% endif %}
+
+        <div class="action-buttons">
+            <a href="{% url 'affaire:liste_affaires' %}" class="btn btn-secondary">Retour à la liste des affaires</a>
+        </div>
     </div>
-    <div class="info-block">
-        <label>Client :</label> <span><a href="#">{{ affaire.client.nom }}</a></span> {# Lien vers le détail du client (à implémenter) #}
-    </div>
-    <div class="info-block">
-        <label>Date d'ouverture :</label> <span>{{ affaire.date_ouverture|date:"d/m/Y" }}</span>
-    </div>
-    <div class="info-block">
-        <label>Statut :</label> <span class="statut-{{ affaire.statut|lower }}">{{ affaire.get_statut_display }}</span>
-    </div>
-    <div class="info-block">
-        <label>Description :</label> <span>{{ affaire.description|linebreaksbr }}</span>
-    </div>
-
-    ---
-
-    <h2>Documents liés</h2>
-    {% if documents %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Fichier</th>
-                    <th>Date d'upload</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for doc in documents %}
-                <tr>
-                    <td><a href="{{ doc.fichier.url }}" target="_blank">{{ doc.fichier.name|slice:"150" }}</a></td> {# Affiche les 150 premiers caractères du nom du fichier #}
-                    <td>{{ doc.date_upload|date:"d/m/Y H:i" }}</td>
-                    <td><a href="#">Télécharger</a></td> {# Lien pour télécharger (le lien href est déjà le chemin, mais vous pouvez ajouter un bouton) #}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Aucun document pour cette affaire.</p>
-    {% endif %}
-
-    ---
-
-    <h2>Rendez-vous</h2>
-    {% if rendezvous %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>Participants</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for rv in rendezvous %}
-                <tr>
-                    <td>{{ rv.titre }}</td>
-                    <td>{{ rv.date_debut|date:"d/m/Y H:i" }}</td>
-                    <td>{{ rv.date_fin|date:"d/m/Y H:i" }}</td>
-                    <td>
-                        {% for participant in rv.participants.all %}
-                            {{ participant.get_full_name|default:participant.username }}{% if not forloop.last %}, {% endif %}
-                        {% empty %}
-                            Aucun
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Aucun rendez-vous planifié pour cette affaire.</p>
-    {% endif %}
-
-    ---
-
-    <h2>Factures</h2>
-    {% if factures %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Montant</th>
-                    <th>Date d'émission</th>
-                    <th>Statut de paiement</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for facture in factures %}
-                <tr>
-                    <td>{{ facture.montant }} €</td>
-                    <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
-                    <td class="statut-{{ facture.statut_paiement|lower }}">{{ facture.get_statut_paiement_display }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Aucune facture pour cette affaire.</p>
-    {% endif %}
-
-    <p><a href="{% url 'affaire:liste_affaires' %}">Retour à la liste des affaires</a></p>
-</body>
-</html>
+{% endblock %}

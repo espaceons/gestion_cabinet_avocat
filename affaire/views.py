@@ -25,9 +25,9 @@ def detail_affaire(request, pk):
     affaire = get_object_or_404(Affaire.objects.select_related('client'), pk=pk)
 
     # Récupérer les objets liés via les related_names (automatiquement générés par Django)
-    documents = affaire.document_set.all().order_by('-date_upload')
-    rendezvous = affaire.rendezvous_set.all().order_by('date_debut')
-    factures = affaire.facture_set.all().order_by('-date_emission')
+    documents = affaire.documents.all().order_by('-date_upload')
+    rendezvous = affaire.rendezvous.all().order_by('date_debut')
+    factures = affaire.factures.all().order_by('-date_emission')
 
     context = {
         'affaire': affaire,
@@ -51,7 +51,7 @@ def creer_affaire(request):
             messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
         form = AffaireForm()
-    return render(request, 'affaires/affaire_form.html', {'form': form, 'titre_page': 'Créer une Affaire'})
+    return render(request, 'affaire/affaire_form.html', {'form': form, 'titre_page': 'Créer une Affaire'})
 
 @login_required
 def modifier_affaire(request, pk):

@@ -2,7 +2,7 @@ from django.views.generic import (
     ListView, CreateView, UpdateView, DeleteView, DetailView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from .models import Document
 from .forms import DocumentForm
@@ -10,7 +10,7 @@ from django.http import FileResponse
 
 class DocumentListView(LoginRequiredMixin, ListView):
     model = Document
-    template_name = 'dossier/document_list.html'
+    template_name = 'dossiers/document_list.html'
     context_object_name = 'documents'
 
     def get_queryset(self):
@@ -39,6 +39,11 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     form_class = DocumentForm
     template_name = 'dossier/document_form.html'
     success_url = reverse_lazy('dossier:document_list')
+    
+    
+    def get_success_url(self):
+        return reverse('affaires:detail', kwargs={'pk': self.object.affaire.pk})
+    
 
     def get_queryset(self):
         return Document.objects.filter(affaire__avocat_responsable=self.request.user)

@@ -21,7 +21,7 @@ class DocumentListView(LoginRequiredMixin, ListView):
 class DocumentCreateView(LoginRequiredMixin, CreateView):
     model = Document
     form_class = DocumentForm
-    template_name = 'dossier/document_form.html'
+    template_name = 'dossiers/document_form.html'
     success_url = reverse_lazy('dossier:document_list')
 
     def get_form_kwargs(self):

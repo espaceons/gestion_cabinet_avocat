@@ -66,6 +66,6 @@ def modifier_affaire(request, pk):
             messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
         form = AffaireForm(instance=affaire)
-    return render(request, 'affaires/affaire_form.html', {'form': form, 'titre_page': 'Modifier l\'Affaire'})
+    return render(request, 'affaire/affaire_form.html', {'form': form, 'titre_page': 'Modifier l\'Affaire'})
 
 # Ajoutez ici des vues pour les clients, rendez-vous, documents, factures si vous les gérez dans leurs propres applications
